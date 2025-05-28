@@ -229,3 +229,9 @@ class Tile(BoardGameVisualObject):
                          right_clicked_func, center_clicked_func, left_clicked_func,
                          right_release_func, center_release_func, left_release_func)
         self.auto_resize: bool = auto_resize
+
+
+class Effect:
+
+    def __init__(self, effect: BoardGamePhotoImage):
+        self.effect = effect

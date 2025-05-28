@@ -9,11 +9,11 @@ from tkinter import Canvas, Misc, Frame
 if __name__ == "__main__":
     from imagetools import BoardGamePhotoImage, get_frame_width, PathOrImage
     from utilities import Coordinate, Coordinatelike
-    from objects import Piece, Tile
+    from objects import Piece, Tile, Effect
 else:
     from .imagetools import BoardGamePhotoImage, get_frame_width, PathOrImage
     from .utilities import Coordinate, Coordinatelike
-    from .objects import Piece, Tile
+    from .objects import Piece, Tile, Effect
 
 
 # tags
@@ -21,6 +21,7 @@ BOARD_TAG = "board"
 FRAME_TAG = "frame"
 TILE_TAG = "tile"
 PIECE_TAG = "piece"
+EFFECT_TAG = "effect"
 
 
 class BoardGameException(Exception):
@@ -104,6 +105,7 @@ class Board(Frame):
 
         self.__board: list[list[None | Piece]] = [[None for _ in range(self.__board_size[0])] for _ in range(self.__board_size[1])]
         self.__tiles: list[list[Tile | None]] = [[None for _ in range(self.__board_size[0])] for _ in range(self.board_size[1])]
+        self.__effects: list[list[Tile | None]] = [[None for _ in range(self.__board_size[0])] for _ in range(self.board_size[1])]
         self.__init_canvas(init_tile)
     
     @property
@@ -121,6 +123,10 @@ class Board(Frame):
     @property
     def tiles(self) -> list[list[Tile | None]]:
         return deepcopy(self.__tiles)
+    
+    @property
+    def effects(self) -> list[list[Effect | None]]:
+        return deepcopy(self.__effects)
     
     def __init_canvas(self, init_tile: Tile | None = None) -> None:
         self.__draw_board()
@@ -455,3 +461,13 @@ class Board(Frame):
         self.__erase_tile(coordinate)
         x, y = coordinate
         self.__board[y][x] = None
+
+    def cause_effect(self, effect: Effect, coordinate: Coordinatelike, layer: int = 0):
+        """指定された座標に効果を適用する
+
+        Args:
+            effect (Effect): 効果
+            coordinate (Coordinatelike): 座標
+            layer (int, optional): レイヤー. defaults to 0.
+        """
+        pass
