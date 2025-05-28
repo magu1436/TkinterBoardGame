@@ -18,7 +18,7 @@ else:
 
 if TYPE_CHECKING:
     if __name__ == "__main__":
-        from boardgame.board import Board
+        from board import Board
     else:
         from .board import Board
 
@@ -229,9 +229,3 @@ class Tile(BoardGameVisualObject):
                          right_clicked_func, center_clicked_func, left_clicked_func,
                          right_release_func, center_release_func, left_release_func)
         self.auto_resize: bool = auto_resize
-
-
-class Effect:
-
-    def __init__(self, effect: BoardGamePhotoImage):
-        self.effect = effect
