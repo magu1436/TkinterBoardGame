@@ -73,11 +73,11 @@ class Coordinate(list):
             y (CoordinateValue): y座標
         """
 
-    def __init__(self, x_or_coor: Union[Sequence, CoordinateValue], y: CoordinateValue = None):
+    def __init__(self, x_or_coor: Sequence[CoordinateValue] | CoordinateValue, y: CoordinateValue | None = None):
         if isinstance(x_or_coor, CoordinateValue.__value__):
-            coor = [x_or_coor, y]
+            coor: list = [x_or_coor, y]
         else:
-            coor = x_or_coor
+            coor: Sequence[CoordinateValue] = x_or_coor
         super().__init__(coor)
     
     @property
@@ -132,7 +132,7 @@ class Coordinate(list):
     def __mul__(self, other: CoordinateValue | Coordinatelike) -> Coordinate:
         if isinstance(other, CoordinateValue.__value__):
             self = deepcopy(self)
-            return Coordinate(map(lambda x: x * other, self))
+            return Coordinate(tuple(map(lambda x: x * other, self)))
         if isinstance(other, Coordinatelike.__value__):
             try:
                 return Coordinate([v1 * v2 for v1, v2 in zip(self, other, strict=True)])
@@ -152,13 +152,13 @@ class Coordinate(list):
         if not isinstance(other, CoordinateValue.__value__):
             raise UnsupportedOperandError("/", self, other)
         self = deepcopy(self)
-        return Coordinate(map(lambda x: x / other, self))
+        return Coordinate(tuple(map(lambda x: x / other, self)))
     
     def __floordiv__(self, other: CoordinateValue) -> Coordinate:
         if not isinstance(other, CoordinateValue.__value__):
             raise UnsupportedOperandError("//", self, other)
         self = deepcopy(self)
-        return Coordinate(map(lambda x: x // other, self))
+        return Coordinate(tuple(map(lambda x: x // other, self)))
     
     def __iter__(self):
         yield self[0]

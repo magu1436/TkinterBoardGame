@@ -17,7 +17,7 @@ SEARCHING_FRAME_SEPARATER = 3
 type PathOrImage = str | Image.Image | ImageTk.PhotoImage | PhotoImage
 
 
-def transparent_image(size: Sequence[int] = None) -> Image.Image:
+def transparent_image(size: tuple[int, int] | list[int] | None = None) -> Image.Image:
     """透明な画像を生成する
 
     Args:
@@ -27,7 +27,7 @@ def transparent_image(size: Sequence[int] = None) -> Image.Image:
         Image.Image: 透明な画像
     """
     if size is None:
-        size = (1, 1)
+        size = (int(1), int(1))
     image = Image.new("RGBA", size, (0, 0, 0, 0))
     return image
 

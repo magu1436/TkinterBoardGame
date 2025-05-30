@@ -10,11 +10,11 @@ from tkinter import PhotoImage
 if __name__ == "__main__":
     from imagetools import BoardGamePhotoImage, PathOrImage
     from utilities import Coordinate, Coordinatelike, CoordinateValue
-    from systems import Player
+    from systems import Player, BGEvent
 else:
     from .imagetools import BoardGamePhotoImage, PathOrImage
     from .utilities import Coordinate, Coordinatelike, CoordinateValue
-    from .systems import Player
+    from .systems import Player, BGEvent
 
 if TYPE_CHECKING:
     if __name__ == "__main__":
@@ -70,20 +70,20 @@ class BoardGameVisualObject(ABC, CloneMixin):
             self, 
             image: PathOrImage | None = None,
             image_display_size: Coordinatelike | None = None,
-            right_clicked_func: Callable[[Board, tkinter.Event], None] | None = None,
-            center_clicked_func: Callable[[Board, tkinter.Event], None] | None = None,
-            left_clicked_func: Callable[[Board, tkinter.Event], None] | None = None,
-            right_release_func: Callable[[Board, tkinter.Event], None] | None = None,
-            center_release_func: Callable[[Board, tkinter.Event], None] | None = None,
-            left_release_func: Callable[[Board, tkinter.Event], None] | None = None,
+            right_clicked_func: Callable[[BGEvent], None] | None = None,
+            center_clicked_func: Callable[[BGEvent], None] | None = None,
+            left_clicked_func: Callable[[BGEvent], None] | None = None,
+            right_release_func: Callable[[BGEvent], None] | None = None,
+            center_release_func: Callable[[BGEvent], None] | None = None,
+            left_release_func: Callable[[BGEvent], None] | None = None,
             ):
         self.image = BoardGamePhotoImage(image)
-        self.right_clicked_func: Callable[[Board, tkinter.Event], None] | None = right_clicked_func
-        self.center_clicked_func: Callable[[Board, tkinter.Event], None] | None = center_clicked_func
-        self.left_clicked_func: Callable[[Board, tkinter.Event], None] | None = left_clicked_func
-        self.right_release_func: Callable[[Board, tkinter.Event], None] | None = right_release_func
-        self.center_release_func: Callable[[Board, tkinter.Event], None] | None = center_release_func
-        self.left_release_func: Callable[[Board, tkinter.Event], None] | None = left_release_func
+        self.right_clicked_func: Callable[[BGEvent], None] | None = right_clicked_func
+        self.center_clicked_func: Callable[[BGEvent], None] | None = center_clicked_func
+        self.left_clicked_func: Callable[[BGEvent], None] | None = left_clicked_func
+        self.right_release_func: Callable[[BGEvent], None] | None = right_release_func
+        self.center_release_func: Callable[[BGEvent], None] | None = center_release_func
+        self.left_release_func: Callable[[BGEvent], None] | None = left_release_func
         self._id: int | None = None    # Canvas上にあるときのid. idがないとき、このオブジェクトはキャンバス上にない
     
     @property
@@ -105,39 +105,41 @@ class BoardGameVisualObject(ABC, CloneMixin):
             display_size = self.image_display_size
         self.image = BoardGamePhotoImage(image, display_size)
     
-    def on_click(self, board: Board, event: tkinter.Event) -> bool:
+    def on_click(self, board: Board, target_obj: Piece | Tile, coordinate: Coordinate, tkevent: tkinter.Event) -> bool:
         """自身がクリックされたときに呼び出される関数
 
         `*_clicked_func` が指定されている場合は, その関数を呼び出す.
         """
-        match event.num:
+        event = BGEvent(board, target_obj, coordinate, tkevent)
+        match tkevent.num:
             case 1:
                 if self.left_clicked_func is not None:
-                    self.left_clicked_func(board, event)
+                    self.left_clicked_func(event)
             case 2:
                 if self.center_clicked_func is not None:
-                    self.center_clicked_func(board, event)
+                    self.center_clicked_func(event)
             case 3:
                 if self.right_clicked_func is not None:
-                    self.right_clicked_func(board, event)
+                    self.right_clicked_func(event)
             case _: return False
         return True
     
-    def on_release(self, board: Board, event: tkinter.Event) -> bool:
+    def on_release(self, board: Board, target_obj: Piece | Tile, coordinate: Coordinate, tkevent: tkinter.Event) -> bool:
         """自身がクリックされたときに呼び出される関数
 
         `*_release_func` が指定されている場合は, その関数を呼び出す.
         """
-        match event.num:
+        event = BGEvent(board, target_obj, coordinate, tkevent)
+        match tkevent.num:
             case 1:
                 if self.left_release_func is not None:
-                    self.left_release_func(board, event)
+                    self.left_release_func(event)
             case 2:
                 if self.center_release_func is not None:
-                    self.center_release_func(board, event)
+                    self.center_release_func(event)
             case 3:
                 if self.right_release_func is not None:
-                    self.right_release_func(board, event)
+                    self.right_release_func(event)
             case _: return False
         return True
     
@@ -162,12 +164,12 @@ class Piece(BoardGameVisualObject):
             image_display_size: Coordinatelike | None = None,
             auto_resize: bool = True,
             owner: Player | None = None,
-            right_clicked_func: Callable[[Board, tkinter.Event], None] | None = None,
-            center_clicked_func: Callable[[Board, tkinter.Event], None] | None = None,
-            left_clicked_func: Callable[[Board, tkinter.Event], None] | None = None,
-            right_release_func: Callable[[Board, tkinter.Event], None] | None = None,
-            center_release_func: Callable[[Board, tkinter.Event], None] | None = None,
-            left_release_func: Callable[[Board, tkinter.Event], None] | None = None,
+            right_clicked_func: Callable[[BGEvent], None] | None = None,
+            center_clicked_func: Callable[[BGEvent], None] | None = None,
+            left_clicked_func: Callable[[BGEvent], None] | None = None,
+            right_release_func: Callable[[BGEvent], None] | None = None,
+            center_release_func: Callable[[BGEvent], None] | None = None,
+            left_release_func: Callable[[BGEvent], None] | None = None,
             ):
         """
         コンストラクタ
@@ -211,12 +213,12 @@ class Tile(BoardGameVisualObject):
             image: PathOrImage | None = None,
             image_display_size: Coordinatelike | None = None,
             auto_resize: bool = True,
-            right_clicked_func: Callable[[Board, tkinter.Event], None] | None = None,
-            center_clicked_func: Callable[[Board, tkinter.Event], None] | None = None,
-            left_clicked_func: Callable[[Board, tkinter.Event], None] | None = None,
-            right_release_func: Callable[[Board, tkinter.Event], None] | None = None,
-            center_release_func: Callable[[Board, tkinter.Event], None] | None = None,
-            left_release_func: Callable[[Board, tkinter.Event], None] | None = None,
+            right_clicked_func: Callable[[BGEvent], None] | None = None,
+            center_clicked_func: Callable[[BGEvent], None] | None = None,
+            left_clicked_func: Callable[[BGEvent], None] | None = None,
+            right_release_func: Callable[[BGEvent], None] | None = None,
+            center_release_func: Callable[[BGEvent], None] | None = None,
+            left_release_func: Callable[[BGEvent], None] | None = None,
             ):
         """
         コンストラクタ

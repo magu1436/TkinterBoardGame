@@ -241,22 +241,22 @@ class Board(Frame):
         coor = self.get_board_coor_from_tkcoor_in_board((event.x, event.y))
         tile = self.get_tile(coor)
         if tile is not None:
-            tile.on_click(self, event)
+            tile.on_click(self, tile, coor, event)
             return
         piece = self.get(coor)
         if piece is not None:
-            piece.on_click(self, event)
+            piece.on_click(self, piece, coor, event)
             return
     
     def on_release(self, event: tkinter.Event) -> None:
         coor = self.get_board_coor_from_tkcoor_in_board((event.x, event.y))
         tile = self.get_tile(coor)
         if tile is not None:
-            tile.on_release(self, event)
+            tile.on_release(self, tile, coor, event)
             return
         piece = self.get(coor)
         if piece is not None:
-            piece.on_release(self, event)
+            piece.on_release(self, piece, coor, event)
             return
 
     def reset_tiles(self, init_tile: Tile | None = None) -> None:
