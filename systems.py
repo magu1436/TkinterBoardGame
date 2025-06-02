@@ -2,14 +2,15 @@
 from typing import TYPE_CHECKING
 from tkinter import Event
 
-from board import Board
-from utilities import Coordinate
-
 if TYPE_CHECKING:
     if __name__ == "__main__":
         from objects import Piece, Tile
+        from board import Board
+        from utilities import Coordinate
     else:
         from .objects import Piece, Tile
+        from .board import Board
+        from .utilities import Coordinate
 
 class BGSystemException(Exception):
     def __init__(self, *args, **kwargs):
