@@ -20,17 +20,17 @@ PIECE_TAG = "piece"
 
 class BoardGameException(Exception):
     """ボードゲームの例外クラス"""
-    def __self__(self, *args, **kwards):
+    def __self__(self, *args, **kwargs):
         self.args = args
-        self.kwards = kwards
+        self.kwargs = kwargs
 
 class LackOfSizeInfoError(BoardGameException):
     """サイズ情報が不足している場合に生じる.
     """
     def __str__(self):
-        return f"lack of size to difine board-space size, needing to set either board_display_size or space_display_size"
+        return f"lack of size to define board-space size, needing to set either board_display_size or space_display_size"
 
-class UndefinedBunttonFunctionError(BoardGameException):
+class UndefinedButtonFunctionError(BoardGameException):
     """ボタンの関数が指定されていない場合に生じる.
     """
     def __str__(self):
@@ -72,7 +72,6 @@ class Board(Frame):
         self.__board_id: int | None = None  # キャンバス上のボード画像のID
         self.__frame_id: int | None = None  # キャンバス上のボード画像のID
 
-        frame_image = BoardGamePhotoImage(frame_image)
         self.__set_frame_info(frame_image)
 
         self.__set_board_sizes(board_display_size, grid_display_width)
@@ -124,14 +123,18 @@ class Board(Frame):
         self.take_all_pieces()
         self.board_canvas.place(x=0, y=0)
     
-    def __set_frame_info(self, frame_image: BoardGamePhotoImage):
+    def __set_frame_info(self, frame_image: PathOrImage):
         """フレーム画像の透過部分を参照してフレームの大きさを割り出し、セットする関数"""
 
         # ボードのサイズ比に合わせて、フレーム画像をリサイズ
-        frame_image.resize(self.__whole_board_display_size)
-        self.__frame_image: BoardGamePhotoImage = frame_image
-        self.__frame_width: int = get_frame_width(self.__frame_image)
-    
+        image = BoardGamePhotoImage(frame_image)
+        image.resize(self.__whole_board_display_size)
+        self.__frame_image: BoardGamePhotoImage = image
+        if frame_image is not None:
+            self.__frame_width: int = get_frame_width(self.__frame_image)
+        else:
+            self.__frame_width: int = 0
+
     def __set_board_sizes(
             self, 
             board_display_size: Coordinatelike | None, 
