@@ -6,14 +6,9 @@ from copy import deepcopy
 import tkinter
 from tkinter import Canvas, Misc, Frame
 
-if __name__ == "__main__":
-    from imagetools import BoardGamePhotoImage, get_frame_width, PathOrImage
-    from utilities import Coordinate, Coordinatelike
-    from objects import Piece, Tile
-else:
-    from .imagetools import BoardGamePhotoImage, get_frame_width, PathOrImage
-    from .utilities import Coordinate, Coordinatelike
-    from .objects import Piece, Tile
+from .imagetools import BoardGamePhotoImage, get_frame_width, PathOrImage
+from .utilities import Coordinate, Coordinatelike
+from .objects import Piece, Tile
 
 
 # tags

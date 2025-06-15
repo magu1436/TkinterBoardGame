@@ -7,14 +7,9 @@ from abc import ABC
 import tkinter
 from tkinter import PhotoImage
 
-if __name__ == "__main__":
-    from imagetools import BoardGamePhotoImage, PathOrImage
-    from utilities import Coordinate, Coordinatelike, CoordinateValue
-    from systems import Player, BGEvent
-else:
-    from .imagetools import BoardGamePhotoImage, PathOrImage
-    from .utilities import Coordinate, Coordinatelike, CoordinateValue
-    from .systems import Player, BGEvent
+from .imagetools import BoardGamePhotoImage, PathOrImage
+from .utilities import Coordinate, Coordinatelike, CoordinateValue
+from .systems import Player, BGEvent
 
 if TYPE_CHECKING:
     if __name__ == "__main__":

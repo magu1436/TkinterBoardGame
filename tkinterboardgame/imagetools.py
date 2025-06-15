@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from functools import singledispatchmethod
 from PIL import Image, ImageTk
 import tkinter
 from tkinter import PhotoImage
-from typing import Sequence, Literal, overload
+from typing import Sequence, Literal
 import math
 
 
@@ -193,22 +192,3 @@ def get_frame_width(frame_image: BoardGamePhotoImage) -> int:
                     break
     return min(widths)
         
-
-
-if __name__ == "__main__":
-    root = tkinter.Tk()
-    root.geometry("800x800")
-    root.title("test")
-    img = Image.open("images/grid.png").resize((400, 800))
-    img_ = BoardGamePhotoImage(img)
-    canvas = tkinter.Canvas(root, width=400, height=800)
-    canvas.create_image(0, 0, image=img_, anchor=tkinter.NW)
-    img_2 = img_.copy()
-    img_2.rotate(90)
-    canvas2 = tkinter.Canvas(root, width=400, height=800)
-    canvas2.create_image(0, 0, image=img_2, anchor=tkinter.NW)
-    canvas.place(x=0, y=0)
-    canvas2.place(x=400, y=400)
-    img_2._BoardGamePhotoImage__pil_image.save("images/test.png", format="PNG")
-    print(img_2.width(), img_2.height())
-    root.mainloop()
