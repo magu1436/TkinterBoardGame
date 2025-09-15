@@ -5,7 +5,7 @@ from tkinter import Event
 
 if TYPE_CHECKING:
     from .objects import Piece, Tile
-    from .board import Board
+    from .board.board import Board
     from .utilities import Coordinate
 
 class BGSystemException(Exception):

@@ -6,9 +6,9 @@ from copy import deepcopy
 import tkinter
 from tkinter import Canvas, Misc, Frame
 
-from .imagetools import BoardGamePhotoImage, get_frame_width, PathOrImage
-from .utilities import Coordinate, Coordinatelike
-from .objects import Piece, Tile
+from ..imagetools import BoardGamePhotoImage, get_frame_width, PathOrImage
+from ..utilities import Coordinate, Coordinatelike
+from ..objects import Piece, Tile
 
 
 # tags
@@ -65,6 +65,14 @@ class Board(Frame):
         コンストラクタ
         Args:
             board_size (Coordinatelike): ボードのサイズ
+            background_image (PathOrImage): 背景画像
+            board_display_size (Coordinatelike): 表示上のボードのサイズ
+            grid_image (PathOrImage, None): 
+                グリッドの画像. `None` のとき透明なグリッドを配置する.  
+                Default to None.
+            frame_image (PathOrImage, None): 外枠の画像. Default to None.
+            grid_display_width (int): グリッドの幅. Default to 0.
+            init_tile (Tile, None): 初期状態で配置するタイル. Default to None.
         """
 
         self.__board_size: Coordinate = Coordinate(board_size)

@@ -13,9 +13,9 @@ from .systems import Player, BGEvent
 
 if TYPE_CHECKING:
     if __name__ == "__main__":
-        from board import Board
+        from tkinterboardgame.board.board import Board
     else:
-        from .board import Board
+        from .board.board import Board
 
 
 class BGObjectsException(Exception):
