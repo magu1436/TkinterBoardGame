@@ -12,22 +12,23 @@ class _IndexErrorResult(TypedDict):
 class BoardStateND(Generic[_T]):
     """N次元の盤面状況を保持するための多次元配列クラス."""
 
-    def __init__(self, *dimension_sizes: int):
+    def __init__(self, *dimension_sizes: int, init_value: _T | None = None):
         """コンストラクタ
         
         Args:
             *dimension_size(int): 各次元の要素数. 最低でも1次元は定義しなければエラーとなる.
+            init_value(_T, None): 初期値. Default to None.
         """
         if len(dimension_sizes) == 0:
             raise ValueError("BoardNdState needs dimension size.")
+        
+        self.__init_value: _T | None = init_value
 
         self._state: _StateDimension = self.__create_one_dimension(dimension_sizes)
         self.__dimension_size: tuple[int] = dimension_sizes
         
     def __create_one_dimension(self, dimension_sizes: tuple[int]) -> _StateDimension | None:
-        """各次元のリストを再帰的に作成するメソッド.  
-        
-        初期の要素の値は `None` となる."""
+        """各次元のリストを再帰的に作成するメソッド."""
         if len(dimension_sizes) > 1:
             target: _StateDimension = []
             for _ in range(dimension_sizes[0]):
@@ -35,7 +36,7 @@ class BoardStateND(Generic[_T]):
             return target
         
         if len(dimension_sizes) == 1:
-            return [None for _ in range(dimension_sizes[0])]
+            return [self.__init_value for _ in range(dimension_sizes[0])]
         
         raise ValueError(f"a received tuple is incorrect. dimension_sizes: {dimension_sizes}")
     
@@ -44,6 +45,9 @@ class BoardStateND(Generic[_T]):
         
         TODO: [1, 1:] のようなintとsliceの複合のインデックス指定に対応
         """
+        # 引数が全て同じ型であるか判定. 複合に対応していない限りは必要.
+        if (isinstance(indexes, tuple)) and not(len({type(v) for v in indexes}) <= 1):
+            raise IndexError(f"all args must be same type. args: {indexes}")
         
         match indexes:
             case tuple():
@@ -55,7 +59,7 @@ class BoardStateND(Generic[_T]):
             case slice():
                 return self.__get_values_with_slice(indexes, self._state)
     
-    def __get_value_with_tuple_or_int(self, indexes: tuple[int], int) -> None | _T:
+    def __get_value_with_tuple_or_int(self, indexes: tuple[int] | int) -> None | _T:
         """intのインデックス指定で値を取得するメソッド"""
         
         if type(indexes) == int:
@@ -137,8 +141,8 @@ class BoardStateND(Generic[_T]):
 
 
 class BoardState2D(BoardStateND):
-    def __init__(self, x: int, y: int):
-        super().__init__(x, y)
+    def __init__(self, x: int, y: int, init_value: _T | None = None):
+        super().__init__(x, y, init_value=init_value)
     
     @property
     def rows(self) -> tuple[tuple[_T, None]]:

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from PIL import Image, ImageTk
-import tkinter
 from tkinter import PhotoImage
 from typing import Sequence, Literal
 import math

@@ -9,6 +9,7 @@ from tkinter import Canvas, Misc, Frame
 from ..imagetools import BoardGamePhotoImage, get_frame_width, PathOrImage
 from ..utilities import Coordinate, Coordinatelike
 from ..objects import Piece, Tile
+from .state import BoardState2D
 
 
 # tags
@@ -103,9 +104,9 @@ class Board(Frame):
             )
         self.board_canvas.bind("<ButtonPress>", self.on_click)
         self.board_canvas.bind("<ButtonRelease>", self.on_release)
-
-        self.__board: list[list[None | Piece]] = [[None for _ in range(self.__board_size[0])] for _ in range(self.__board_size[1])]
-        self.__tiles: list[list[Tile | None]] = [[None for _ in range(self.__board_size[0])] for _ in range(self.board_size[1])]
+        
+        self.__board: BoardState2D[Piece, None] = BoardState2D(*self.__board_size)
+        self.__tiles: BoardState2D[Tile, None] = BoardState2D(*self.__board_size)
         self.__init_canvas(init_tile)
     
     @property
@@ -277,7 +278,7 @@ class Board(Frame):
         for y in range(self.board_size.y):
             for x in range(self.board_size.x):
                 self.__erase_tile((x, y))
-        self.__tiles = [[init_tile for _ in range(self.board_size[0])] for _ in range(self.board_size[1])]
+        self.__tiles = BoardState2D(*self.__board_size, init_tile)
         for y in range(self.board_size.y):
             for x in range(self.board_size.x):
                 self.__draw_tile(self.get_tile((x, y)), (x, y))
@@ -357,12 +358,10 @@ class Board(Frame):
         Returns:
             Piece | None: 指定された座標にある駒
         """
-        x, y = coordinate
-        # self.__board[x][y] は誤りなので注意
-        return self.__board[y][x]
+        return self.__board[coordinate]
     
     def get_all_pieces(self) -> list[Piece]:
-        return list(filter(None, [p for row in self.__board for p in row]))
+        return list(filter(None, [p for p in self.__board]))
 
     def take(self, coordinate: Coordinatelike) -> Piece | None:
         """指定された座標にある駒を取得し, その駒をボードから取り除く
@@ -376,8 +375,7 @@ class Board(Frame):
         if piece is not None:
             self.__erase_piese(piece)
             piece._coordinate = None
-        x, y = coordinate
-        self.__board[y][x] = None
+        self.__board[coordinate]
         return piece
     
     def take_all_pieces(self) -> list[Piece]:
@@ -400,7 +398,7 @@ class Board(Frame):
             if piece.auto_resize:
                 piece.image.resize(self.__space_display_size)
         self.__draw_piece(piece)
-        self.__board[coordinate.y][coordinate.x] = piece
+        self.__board[coordinate] = piece
     
     def replace(self, piece: Piece | None, coordinate: Coordinatelike) -> Piece | None:
         """指定された座標に駒を配置する.
@@ -423,8 +421,7 @@ class Board(Frame):
         Returns:
             Tile | None: 指定された座標にあるタイル
         """
-        x, y = coordinate
-        return self.__tiles[y][x]
+        return self.__tiles[coordinate]
 
     def replace_tile(self, tile: Tile | None, coordinate: Coordinatelike) -> Tile | None:
         """指定された座標にタイルを配置する
@@ -445,11 +442,10 @@ class Board(Frame):
             tile (Tile | None): タイル
             coordinate (Coordinatelike): 座標
         """
-        x, y = coordinate
         self.__erase_tile(coordinate)
         if tile is not None:
             tile.image.resize(self.__space_display_size)
-        self.__tiles[y][x] = tile
+        self.__tiles[coordinate] = tile
         self.__draw_tile(tile, coordinate)
 
     def remove_tile(self, coordinate: Coordinatelike):
@@ -459,5 +455,4 @@ class Board(Frame):
             coordinate (Coordinatelike): 座標
         """
         self.__erase_tile(coordinate)
-        x, y = coordinate
-        self.__board[y][x] = None
+        self.__board[coordinate] = None
