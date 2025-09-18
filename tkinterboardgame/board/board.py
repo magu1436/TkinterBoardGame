@@ -104,8 +104,8 @@ class Board(Frame):
             )
         self.board_canvas.bind("<ButtonPress>", self.on_click)
         self.board_canvas.bind("<ButtonRelease>", self.on_release)
-        
-        self.__board: BoardState2D[Piece, None] = BoardState2D(*self.__board_size)
+
+        self.__pieces: BoardState2D[Piece, None] = BoardState2D(*self.__board_size)
         self.__tiles: BoardState2D[Tile, None] = BoardState2D(*self.__board_size)
         self.__init_canvas(init_tile)
     
@@ -118,11 +118,11 @@ class Board(Frame):
         return deepcopy(self.__board_size)
     
     @property
-    def board(self) -> list[list[Piece | None]]:
-        return deepcopy(self.__board)
+    def pieces(self) -> BoardState2D[Piece, None]:
+        return deepcopy(self.__pieces)
     
     @property
-    def tiles(self) -> list[list[Tile | None]]:
+    def tiles(self) -> BoardState2D[Piece, None]:
         return deepcopy(self.__tiles)
     
     def __init_canvas(self, init_tile: Tile | None = None) -> None:
@@ -358,10 +358,10 @@ class Board(Frame):
         Returns:
             Piece | None: 指定された座標にある駒
         """
-        return self.__board[coordinate]
+        return self.__pieces[coordinate]
     
     def get_all_pieces(self) -> list[Piece]:
-        return list(filter(None, [p for p in self.__board]))
+        return list(filter(None, [p for p in self.__pieces]))
 
     def take(self, coordinate: Coordinatelike) -> Piece | None:
         """指定された座標にある駒を取得し, その駒をボードから取り除く
@@ -375,7 +375,7 @@ class Board(Frame):
         if piece is not None:
             self.__erase_piese(piece)
             piece._coordinate = None
-        self.__board[coordinate]
+        self.__pieces[coordinate]
         return piece
     
     def take_all_pieces(self) -> list[Piece]:
@@ -398,7 +398,7 @@ class Board(Frame):
             if piece.auto_resize:
                 piece.image.resize(self.__space_display_size)
         self.__draw_piece(piece)
-        self.__board[coordinate] = piece
+        self.__pieces[coordinate] = piece
     
     def replace(self, piece: Piece | None, coordinate: Coordinatelike) -> Piece | None:
         """指定された座標に駒を配置する.
@@ -455,4 +455,4 @@ class Board(Frame):
             coordinate (Coordinatelike): 座標
         """
         self.__erase_tile(coordinate)
-        self.__board[coordinate] = None
+        self.__pieces[coordinate] = None
